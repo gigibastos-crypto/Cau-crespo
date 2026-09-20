@@ -38,10 +38,11 @@ create table if not exists clients (
 create table if not exists products (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  collection text,
   type text not null default 'outro'
     check (type in ('anel', 'colar', 'brinco', 'pulseira', 'broche', 'outro')),
   material text not null default 'prata'
-    check (material in ('prata', 'madeira', 'prata_madeira', 'outro')),
+    check (material in ('prata', 'dourado', 'madeira', 'prata_dourado', 'prata_madeira', 'outro')),
   price numeric(10,2) not null default 0,
   description text,
   photo_url text,

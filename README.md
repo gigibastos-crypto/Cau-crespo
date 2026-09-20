@@ -28,6 +28,9 @@ uso interno para a Claudia acompanhar clientes, pedidos e financeiro.
 2. Crie um novo projeto.
 3. Vá em **SQL Editor**, cole o conteúdo de `supabase/schema.sql` e clique em
    "Run". Isso cria todas as tabelas e as regras de segurança.
+3.1. (Opcional) No mesmo SQL Editor, rode também `supabase/seed.sql` para já
+   começar com o catálogo populado com as peças extraídas do PDF da marca,
+   em vez de cadastrar cada uma manualmente.
 4. Vá em **Authentication → Users** e crie o primeiro usuário (seu e-mail e
    senha) — marque "Auto Confirm User".
 5. Em **Project Settings → API**, copie a "Project URL" e a chave

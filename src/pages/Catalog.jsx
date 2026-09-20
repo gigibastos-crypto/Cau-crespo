@@ -3,10 +3,20 @@ import { supabase } from '../lib/supabaseClient'
 import Modal from '../components/Modal.jsx'
 import { formatMoney } from '../lib/format'
 
-const empty = { name: '', type: 'anel', material: 'prata', price: '', description: '', photo_url: '', status: 'ativo' }
+const empty = { name: '', collection: '', type: 'anel', material: 'prata', price: '', description: '', photo_url: '', status: 'ativo' }
 
 const typeLabels = { anel: 'Anel', colar: 'Colar', brinco: 'Brinco', pulseira: 'Pulseira', broche: 'Broche', outro: 'Outro' }
-const materialLabels = { prata: 'Prata', madeira: 'Madeira', prata_madeira: 'Prata + Madeira', outro: 'Outro' }
+const materialLabels = {
+  prata: 'Prata', dourado: 'Dourado', madeira: 'Madeira',
+  prata_dourado: 'Prata e Dourado (opções)', prata_madeira: 'Prata + Madeira', outro: 'Outro',
+}
+
+// Coleções já existentes da marca (do site oficial) — sugestões no cadastro;
+// o campo aceita qualquer texto, então novas coleções não exigem alteração aqui.
+const KNOWN_COLLECTIONS = [
+  'Beijo', 'Bombe', 'Coração', 'Ear Cuff', 'Ear Hook', 'Entremeios',
+  'Felinos', 'Îakaré', 'Metamorfose', 'Niemeyer', 'Onda', 'Pantera', 'Pepita', 'Wood',
+]
 
 export default function Catalog() {
   const [products, setProducts] = useState([])
@@ -36,7 +46,7 @@ export default function Catalog() {
   async function handleSubmit(e) {
     e.preventDefault()
     const payload = {
-      name: form.name, type: form.type, material: form.material,
+      name: form.name, collection: form.collection || null, type: form.type, material: form.material,
       price: Number(form.price) || 0, description: form.description,
       photo_url: form.photo_url, status: form.status,
     }
@@ -73,12 +83,13 @@ export default function Catalog() {
       ) : (
         <table>
           <thead>
-            <tr><th>Peça</th><th>Tipo</th><th>Material</th><th>Preço</th><th>Status</th><th></th></tr>
+            <tr><th>Peça</th><th>Coleção</th><th>Tipo</th><th>Material</th><th>Preço</th><th>Status</th><th></th></tr>
           </thead>
           <tbody>
             {products.map(p => (
               <tr key={p.id}>
                 <td>{p.name}</td>
+                <td>{p.collection || '—'}</td>
                 <td>{typeLabels[p.type]}</td>
                 <td>{materialLabels[p.material]}</td>
                 <td>{formatMoney(p.price)}</td>
@@ -98,6 +109,16 @@ export default function Catalog() {
           <form onSubmit={handleSubmit}>
             <label>Nome</label>
             <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            <label>Coleção</label>
+            <input
+              list="collection-options"
+              value={form.collection || ''}
+              onChange={e => setForm({ ...form, collection: e.target.value })}
+              placeholder="Ex.: Onda, Wood, Beijo…"
+            />
+            <datalist id="collection-options">
+              {KNOWN_COLLECTIONS.map(c => <option key={c} value={c} />)}
+            </datalist>
             <div className="row">
               <div>
                 <label>Tipo</label>
