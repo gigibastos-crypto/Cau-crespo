@@ -17,4 +17,6 @@ insert into products (name, collection, type, material, price, description, phot
   ('Ear Cuff Circle P', 'Ear Cuff', 'brinco', 'prata_dourado', 580, 'Ear cuff circular, tamanho P.', '/products/ear-cuff-circle-p.jpg', 'ativo'),
   ('Ear Cuff Circle M', 'Ear Cuff', 'brinco', 'prata_dourado', 1170, 'Ear cuff circular, tamanho M.', '/products/ear-cuff-circle-m.jpg', 'ativo'),
   ('Ear Cuff G', 'Ear Cuff', 'brinco', 'prata_dourado', 1280, 'Ear cuff tamanho G. Disponível em prata e dourado.', '/products/ear-cuff-g.jpg', 'ativo'),
-  ('Ear Hook Un', 'Ear Hook', 'brinco', 'prata_dourado', 390, 'Ear hook vendido em unidade (avulso). Disponível em prata e dourado.', '/products/ear-hook-un.jpg', 'ativo');
+  ('Ear Hook Un', 'Ear Hook', 'brinco', 'prata_dourado', 390, 'Ear hook vendido em unidade (avulso). Disponível em prata e dourado.', '/products/ear-hook-un.jpg', 'ativo'),
+  ('Pingente Pepita P', 'Pepita', 'colar', 'prata_dourado', 1670, 'Colar com pingente pepita, tamanho P. Disponível em prata e dourado.', '/products/pingente-pepita-p.jpg', 'ativo'),
+  ('Pingente Pepita G', 'Pepita', 'colar', 'prata_dourado', 2250, 'Colar com pingente pepita, tamanho G. Disponível em prata e dourado.', '/products/pingente-pepita-g.jpg', 'ativo');
