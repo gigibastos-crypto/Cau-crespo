@@ -11,8 +11,21 @@ create extension if not exists "pgcrypto";
 create table if not exists clients (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  cpf text,
+  email text,
   phone text,
   instagram text,
+  preferred_contact text
+    check (preferred_contact in ('whatsapp', 'telefone', 'email', 'instagram')),
+  birth_date date,
+  is_vip boolean not null default false,
+  cep text,
+  street text,
+  address_number text,
+  complement text,
+  neighborhood text,
+  city text,
+  state text,
   notes text,
   created_at timestamptz not null default now()
 );
