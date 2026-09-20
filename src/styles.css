@@ -1,12 +1,11 @@
 :root {
-  --brand-primary: #6b4a2f;      /* madeira nobre */
-  --brand-accent: #a98a4e;       /* prata/dourado envelhecido */
-  --silver: #9a9a9f;
-  --bg: #faf7f2;
+  --brand-primary: #8a2e26;      /* vermelho terracota/vinho da marca */
+  --brand-accent: #b3554a;       /* variação mais clara, para hover/destaque */
+  --bg: #ece0d0;                 /* bege rosado do site */
   --surface: #ffffff;
-  --border: #e7e0d4;
-  --text: #2b2118;
-  --muted: #7a7168;
+  --border: #ddccb8;
+  --text: #3a332c;
+  --muted: #7d7367;
   --danger: crimson;
   --radius: 10px;
 }
@@ -21,11 +20,12 @@ body {
 }
 
 h1, h2, h3, .brand-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Fraunces', serif;
 }
 
 .brand-title {
-  font-weight: 600;
+  font-family: 'Beau Rivage', cursive;
+  font-weight: 400;
   color: var(--brand-primary);
 }
 
