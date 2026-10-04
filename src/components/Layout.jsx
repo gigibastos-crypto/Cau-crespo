@@ -14,7 +14,7 @@ export default function Layout({ children }) {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="brand-title" style={{ fontSize: 22, marginBottom: 24 }}>Cau Crespo</div>
+        <img src="/logo.png" alt="Cau Crespo" className="logo-mark" />
         <nav>
           {links.map(link => (
             <NavLink

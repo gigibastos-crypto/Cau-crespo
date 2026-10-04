@@ -18,7 +18,7 @@ export default function Login() {
 
   return (
     <div className="public-shell">
-      <h1 className="brand-title">Cau Crespo</h1>
+      <img src="/logo.png" alt="Cau Crespo" className="logo-mark" style={{ maxWidth: 260, marginBottom: 0 }} />
       <p style={{ color: 'var(--muted)' }}>Gestão do ateliê</p>
       <form onSubmit={handleSubmit} className="card" style={{ maxWidth: 360, width: '100%' }}>
         <label>E-mail</label>

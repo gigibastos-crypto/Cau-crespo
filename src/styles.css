@@ -1,7 +1,7 @@
 :root {
   --brand-primary: #8a2e26;      /* vermelho terracota/vinho da marca */
   --brand-accent: #b3554a;       /* variação mais clara, para hover/destaque */
-  --bg: #ece0d0;                 /* bege rosado do site */
+  --bg: #e3d9cf;                 /* bege rosado do site (igual ao fundo da logo oficial) */
   --surface: #ffffff;
   --border: #ddccb8;
   --text: #3a332c;
@@ -19,14 +19,8 @@ body {
   color: var(--text);
 }
 
-h1, h2, h3, .brand-title {
+h1, h2, h3 {
   font-family: 'Fraunces', serif;
-}
-
-.brand-title {
-  font-family: 'Alex Brush', cursive;
-  font-weight: 400;
-  color: var(--brand-primary);
 }
 
 button {
@@ -101,12 +95,20 @@ label {
 .sidebar {
   width: 220px;
   flex-shrink: 0;
-  background: var(--surface);
+  background: var(--bg);
   border-right: 1px solid var(--border);
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.logo-mark {
+  display: block;
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+  margin: 0 auto 24px;
 }
 
 .nav-link {
@@ -119,7 +121,7 @@ label {
   margin-bottom: 2px;
 }
 
-.nav-link:hover { background: var(--bg); }
+.nav-link:hover { background: var(--surface); }
 .nav-link.active { background: var(--brand-primary); color: #fff; }
 
 .content {
