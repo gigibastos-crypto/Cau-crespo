@@ -8,9 +8,10 @@ import Clients from './pages/Clients.jsx'
 import Catalog from './pages/Catalog.jsx'
 import Orders from './pages/Orders.jsx'
 import Finance from './pages/Finance.jsx'
+import Equipe from './pages/Equipe.jsx'
 
 function PrivateArea() {
-  const { session, loading, isStaff } = useAuth()
+  const { session, loading, isStaff, isMaster } = useAuth()
 
   if (loading) return <div className="public-shell">Carregando…</div>
   if (!session) return <Navigate to="/login" replace />
@@ -25,7 +26,8 @@ function PrivateArea() {
         <Route path="/clientes" element={<Clients />} />
         <Route path="/catalogo" element={<Catalog />} />
         <Route path="/pedidos" element={<Orders />} />
-        <Route path="/financeiro" element={<Finance />} />
+        <Route path="/financeiro" element={isMaster ? <Finance /> : <Navigate to="/" replace />} />
+        <Route path="/equipe" element={isMaster ? <Equipe /> : <Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

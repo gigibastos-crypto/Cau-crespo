@@ -1,16 +1,23 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../lib/AuthContext.jsx'
 
-const links = [
+const baseLinks = [
   { to: '/', label: 'Painel', end: true },
   { to: '/pedidos', label: 'Pedidos' },
   { to: '/clientes', label: 'Clientes' },
   { to: '/catalogo', label: 'Catálogo' },
+]
+
+const masterLinks = [
   { to: '/financeiro', label: 'Financeiro' },
+  { to: '/equipe', label: 'Equipe' },
 ]
 
 export default function Layout({ children }) {
+  const { isMaster } = useAuth()
+  const links = isMaster ? [...baseLinks, ...masterLinks] : baseLinks
   return (
     <div className="app-shell">
       <aside className="sidebar">
