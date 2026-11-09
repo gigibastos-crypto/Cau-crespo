@@ -294,15 +294,15 @@ tr:last-child td { border-bottom: none; }
     display: flex;
     flex: 1;
     justify-content: space-around;
+    min-width: 0;
   }
 
-  .nav-link,
-  .sidebar button.nav-logout {
+  .nav-link {
     flex: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
     padding: 6px 2px;
     font-size: 10px;
     text-align: center;
@@ -311,8 +311,30 @@ tr:last-child td { border-bottom: none; }
   }
 
   .nav-icon {
-    width: 21px;
-    height: 21px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .sidebar button.nav-logout {
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    width: 40px;
+    padding: 6px 0;
+    margin-bottom: 0;
+    margin-left: 4px;
+    border-radius: 10px;
+  }
+
+  .sidebar button.nav-logout .nav-icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .sidebar button.nav-logout .nav-label {
+    display: none;
   }
 
   .content {
