@@ -111,14 +111,22 @@ label {
   margin: 0 auto 24px;
 }
 
-.nav-link {
-  display: block;
+.nav-link,
+.sidebar button.nav-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
   color: var(--text);
   text-decoration: none;
   font-size: 14px;
   margin-bottom: 2px;
+}
+
+.sidebar button.nav-logout {
+  margin-top: auto;
+  margin-bottom: 0;
 }
 
 .nav-link:hover { background: var(--surface); }
@@ -240,4 +248,90 @@ tr:last-child td { border-bottom: none; }
   text-align: center;
   padding: 40px 20px;
   color: var(--muted);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* iPad and other medium screens: sidebar stays as-is, just a bit narrower */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .sidebar { width: 180px; }
+  .content { padding: 28px 24px; }
+}
+
+/* Phone: bottom tab bar, app-like */
+@media (max-width: 640px) {
+  .app-shell {
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    border-right: none;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    z-index: 20;
+  }
+
+  .sidebar .logo-mark {
+    display: none;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+  }
+
+  .nav-link,
+  .sidebar button.nav-logout {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 2px;
+    font-size: 10px;
+    text-align: center;
+    margin-bottom: 0;
+    border-radius: 10px;
+  }
+
+  .nav-icon {
+    width: 21px;
+    height: 21px;
+  }
+
+  .content {
+    padding: 16px;
+    padding-bottom: 88px;
+    max-width: 100%;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .modal {
+    padding: 16px;
+  }
 }
