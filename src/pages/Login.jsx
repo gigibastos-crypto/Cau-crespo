@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
 export default function Login() {
@@ -7,13 +7,27 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const location = useLocation()
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
-    else navigate('/')
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+    if (signInError) {
+      setError(signInError.message)
+      return
+    }
+    const { data: staffRow } = await supabase
+      .from('staff')
+      .select('user_id')
+      .eq('user_id', data.user.id)
+      .maybeSingle()
+    if (!staffRow) {
+      await supabase.auth.signOut()
+      setError('Esta conta não tem acesso ao sistema de gestão.')
+      return
+    }
+    navigate('/')
   }
 
   return (
@@ -25,7 +39,11 @@ export default function Login() {
         <input value={email} onChange={e => setEmail(e.target.value)} type="email" required />
         <label>Senha</label>
         <input value={password} onChange={e => setPassword(e.target.value)} type="password" required />
-        {error && <p style={{ color: 'crimson' }}>{error}</p>}
+        {(error || location.state?.notStaff) && (
+          <p style={{ color: 'crimson' }}>
+            {error || 'Esta conta não tem acesso ao sistema de gestão.'}
+          </p>
+        )}
         <button type="submit">Entrar</button>
       </form>
       <p style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 360, textAlign: 'center' }}>

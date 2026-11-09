@@ -10,10 +10,13 @@ import Orders from './pages/Orders.jsx'
 import Finance from './pages/Finance.jsx'
 
 function PrivateArea() {
-  const { session, loading } = useAuth()
+  const { session, loading, isStaff } = useAuth()
 
   if (loading) return <div className="public-shell">Carregando…</div>
   if (!session) return <Navigate to="/login" replace />
+
+  if (isStaff === null) return <div className="public-shell">Carregando…</div>
+  if (isStaff === false) return <Navigate to="/login" replace state={{ notStaff: true }} />
 
   return (
     <Layout>
