@@ -46,6 +46,7 @@ export const MODULES = [
     pages: [
       { to: '/configuracoes/fornecedores', label: 'Fornecedores' },
       { to: '/configuracoes/categorias', label: 'Categorias de despesa' },
+      { to: '/configuracoes/entregadores', label: 'Entregadores' },
       { to: '/configuracoes/equipe', label: 'Equipe' },
     ],
   },

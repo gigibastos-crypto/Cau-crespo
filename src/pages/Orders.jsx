@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import Modal from '../components/Modal.jsx'
 import { formatMoney, formatDate } from '../lib/format'
+import { DELIVERY_METHODS, clientAddress, whatsappLink } from '../lib/delivery'
 
 const channelLabels = { atelie: 'Ateliê', whatsapp: 'WhatsApp', instagram: 'Instagram' }
 const statusLabels = { encomendado: 'Encomendado', em_producao: 'Em produção', pronto: 'Pronto', entregue: 'Entregue', cancelado: 'Cancelado' }
@@ -11,6 +12,7 @@ const emptyItem = () => ({ key: crypto.randomUUID(), product_id: '', description
 const emptyForm = () => ({
   client_id: '', channel: 'whatsapp', status: 'encomendado', payment_status: 'pendente',
   order_date: new Date().toISOString().slice(0, 10), delivery_date: '', material_cost: '', notes: '',
+  delivery_method: '', courier_id: '', delivery_address: '', delivery_fee: '',
   items: [emptyItem()],
 })
 
@@ -18,17 +20,20 @@ export default function Orders() {
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
   const [products, setProducts] = useState([])
+  const [couriers, setCouriers] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm())
 
   async function load() {
     setLoading(true)
-    const [{ data: ordersData }, { data: clientsData }, { data: productsData }] = await Promise.all([
-      supabase.from('orders').select('*, clients(name), order_items(*)').order('order_date', { ascending: false }),
-      supabase.from('clients').select('id,name').order('name'),
+    const [{ data: ordersData }, { data: clientsData }, { data: productsData }, { data: couriersData }] = await Promise.all([
+      supabase.from('orders').select('*, clients(name), order_items(*), couriers(name)').order('order_date', { ascending: false }),
+      supabase.from('clients').select('id,name,phone,street,address_number,complement,neighborhood,city,state,cep').order('name'),
       supabase.from('products').select('id,name,price').eq('status', 'ativo').order('name'),
+      supabase.from('couriers').select('id,name,phone,default_fee,active').order('name'),
     ])
+    setCouriers(couriersData ?? [])
     setOrders(ordersData ?? [])
     setClients(clientsData ?? [])
     setProducts(productsData ?? [])
@@ -52,6 +57,10 @@ export default function Orders() {
       delivery_date: order.delivery_date || '',
       material_cost: order.material_cost ?? '',
       notes: order.notes || '',
+      delivery_method: order.delivery_method || '',
+      courier_id: order.courier_id || '',
+      delivery_address: order.delivery_address || '',
+      delivery_fee: order.delivery_fee ?? '',
       items: order.order_items.length
         ? order.order_items.map(i => ({ key: i.id, product_id: i.product_id || '', description: i.description, unit_price: i.unit_price, quantity: i.quantity }))
         : [emptyItem()],
@@ -97,6 +106,10 @@ export default function Orders() {
       total_value: total,
       material_cost: form.material_cost === '' ? null : Number(form.material_cost),
       notes: form.notes,
+      delivery_method: form.delivery_method || null,
+      courier_id: form.delivery_method === 'motoboy' && form.courier_id ? form.courier_id : null,
+      delivery_address: ['motoboy', 'correios', 'outro'].includes(form.delivery_method) ? (form.delivery_address || null) : null,
+      delivery_fee: form.delivery_method === 'motoboy' && form.delivery_fee !== '' ? Number(form.delivery_fee) : null,
     }
 
     let orderId = editing
@@ -125,6 +138,35 @@ export default function Orders() {
     load()
   }
 
+  function setDeliveryMethod(method) {
+    setForm(f => {
+      const next = { ...f, delivery_method: method }
+      if (method !== 'retirada' && method && !f.delivery_address) {
+        next.delivery_address = clientAddress(clients.find(c => c.id === f.client_id))
+      }
+      return next
+    })
+  }
+
+  function pickCourier(courierId) {
+    const c = couriers.find(x => x.id === courierId)
+    setForm(f => ({
+      ...f,
+      courier_id: courierId,
+      delivery_fee: f.delivery_fee === '' && c?.default_fee != null ? c.default_fee : f.delivery_fee,
+    }))
+  }
+
+  const selectedCourier = couriers.find(c => c.id === form.courier_id)
+  const selectedClient = clients.find(c => c.id === form.client_id)
+  const courierMessage = [
+    `Olá${selectedCourier ? ', ' + selectedCourier.name.split(' ')[0] : ''}! Entrega da Cau Crespo`,
+    form.delivery_date && `Data: ${formatDate(form.delivery_date)}`,
+    selectedClient && `Cliente: ${selectedClient.name}${selectedClient.phone ? ' — ' + selectedClient.phone : ''}`,
+    form.delivery_address && `Endereço: ${form.delivery_address}`,
+  ].filter(Boolean).join('\n')
+  const courierWa = selectedCourier && whatsappLink(selectedCourier.phone, courierMessage)
+
   async function handleDelete(id) {
     if (!confirm('Excluir este pedido?')) return
     await supabase.from('orders').delete().eq('id', id)
@@ -152,7 +194,7 @@ export default function Orders() {
           <thead>
             <tr>
               <th>Cliente</th><th>Canal</th><th>Peças</th><th>Valor</th>
-              <th>Status</th><th>Pagamento</th><th>Pedido em</th><th></th>
+              <th>Status</th><th>Pagamento</th><th>Entrega</th><th>Pedido em</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -168,6 +210,10 @@ export default function Orders() {
                   </select>
                 </td>
                 <td><span className={`badge ${o.payment_status}`}>{o.payment_status === 'pago' ? 'Pago' : 'Pendente'}</span></td>
+                <td>
+                  {o.delivery_method ? (o.delivery_method === 'motoboy' ? (o.couriers?.name || 'Motoboy') : DELIVERY_METHODS[o.delivery_method]) : '—'}
+                  {o.delivery_date && <div className="cell-sub">{formatDate(o.delivery_date)}</div>}
+                </td>
                 <td>{formatDate(o.order_date)}</td>
                 <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                   <button className="ghost small" onClick={() => openEdit(o)}>Editar</button>{' '}
@@ -213,6 +259,46 @@ export default function Orders() {
                 <input type="date" value={form.delivery_date} onChange={e => setForm({ ...form, delivery_date: e.target.value })} />
               </div>
             </div>
+
+            <label>Como vai ser a entrega</label>
+            <select value={form.delivery_method} onChange={e => setDeliveryMethod(e.target.value)}>
+              <option value="">Ainda não sei</option>
+              {Object.entries(DELIVERY_METHODS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+
+            {form.delivery_method === 'motoboy' && (
+              <div className="row">
+                <div>
+                  <label>Quem vai entregar</label>
+                  <select value={form.courier_id} onChange={e => pickCourier(e.target.value)}>
+                    <option value="">Escolher depois</option>
+                    {couriers.filter(c => c.active || c.id === form.courier_id).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label>Valor pago ao entregador (R$)</label>
+                  <input type="number" step="0.01" min="0" inputMode="decimal" value={form.delivery_fee}
+                    onChange={e => setForm({ ...form, delivery_fee: e.target.value })} />
+                </div>
+              </div>
+            )}
+            {form.delivery_method === 'motoboy' && couriers.length === 0 && (
+              <p className="hint">Nenhum entregador cadastrado ainda. Cadastre em Configurações → Entregadores.</p>
+            )}
+
+            {['motoboy', 'correios', 'outro'].includes(form.delivery_method) && (
+              <>
+                <label>Endereço de entrega</label>
+                <textarea rows={2} value={form.delivery_address} onChange={e => setForm({ ...form, delivery_address: e.target.value })}
+                  placeholder="Rua, número, complemento, bairro, cidade" />
+                {selectedClient && !form.delivery_address && !clientAddress(selectedClient) && (
+                  <p className="hint">A cliente não tem endereço no cadastro. Digite aqui.</p>
+                )}
+                {form.delivery_method === 'motoboy' && courierWa && (
+                  <p className="hint"><a href={courierWa} target="_blank" rel="noreferrer">Mandar endereço para {selectedCourier.name} no WhatsApp →</a></p>
+                )}
+              </>
+            )}
 
             <label>Peças do pedido</label>
             {form.items.map(item => (
