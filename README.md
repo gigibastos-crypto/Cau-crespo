@@ -59,3 +59,14 @@ npm run dev
 - Relatório financeiro por período (hoje o painel só mostra o mês atual).
 - Mais de um usuário com login próprio (hoje qualquer login criado no
   Supabase tem acesso total, o que é suficiente para um único negócio).
+
+## Módulos (novembro/2026)
+- **Estoque** — Posição do estoque (peças do catálogo + matéria-prima, quantidade,
+  custo médio, valor total em custo e em venda, aviso de estoque mínimo) e
+  Movimentações (entradas com custo, saídas e ajustes de contagem). Quantidade e
+  custo médio são calculados no banco a partir das movimentações.
+- **Financeiro** (só master) — Visão geral e Contas a pagar (fornecedor,
+  categoria, forma de pagamento, nº do documento, repetição mensal, pagar/reabrir).
+- **Configurações** (só master) — Fornecedores, Categorias de despesa e Equipe.
+- Banco: `supabase/2026-11_financeiro_fornecedores.sql` e `supabase/2026-11_estoque.sql`
+  (já aplicados no projeto Supabase da Cau Crespo em 14/11/2026).

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import Modal from '../components/Modal.jsx'
 import { formatDate } from '../lib/format'
+import ModulePage from '../components/ModulePage.jsx'
 
 const roleLabels = { master: 'Master', funcionario: 'Funcionário' }
 
@@ -51,11 +52,7 @@ export default function Equipe() {
   }
 
   return (
-    <div>
-      <div className="page-header">
-        <h1>Equipe</h1>
-        <button onClick={openAdd}>+ Adicionar membro</button>
-      </div>
+    <ModulePage module="config" title="Equipe" actions={<button onClick={openAdd}>+ Adicionar membro</button>}>
 
       {error && !adding && <p style={{ color: 'crimson' }}>{error}</p>}
 
@@ -110,6 +107,6 @@ export default function Equipe() {
           </form>
         </Modal>
       )}
-    </div>
+    </ModulePage>
   )
 }
