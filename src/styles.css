@@ -362,7 +362,7 @@ button.stat-card.stat-button:hover { border-color: var(--brand-accent); opacity:
     flex-direction: row;
     align-items: stretch;
     gap: 0;
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    padding: 6px 4px max(10px, calc(6px + env(safe-area-inset-bottom)));
     border-right: none;
     border-top: 1px solid var(--border);
     background: var(--surface);
@@ -422,7 +422,7 @@ button.stat-card.stat-button:hover { border-color: var(--brand-accent); opacity:
 
   .content {
     padding: 16px;
-    padding-bottom: 88px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
     max-width: 100%;
   }
 
