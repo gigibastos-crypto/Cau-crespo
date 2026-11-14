@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../lib/AuthContext.jsx'
+import { marginPct, formatPct, marginClass } from '../lib/pricing'
 import Modal from '../components/Modal.jsx'
 import { formatMoney, formatDate } from '../lib/format'
 import { DELIVERY_METHODS, clientAddress, whatsappLink } from '../lib/delivery'
@@ -7,7 +9,7 @@ import { DELIVERY_METHODS, clientAddress, whatsappLink } from '../lib/delivery'
 const channelLabels = { atelie: 'Ateliê', whatsapp: 'WhatsApp', instagram: 'Instagram' }
 const statusLabels = { encomendado: 'Encomendado', em_producao: 'Em produção', pronto: 'Pronto', entregue: 'Entregue', cancelado: 'Cancelado' }
 
-const emptyItem = () => ({ key: crypto.randomUUID(), product_id: '', description: '', unit_price: '', quantity: 1 })
+const emptyItem = () => ({ key: crypto.randomUUID(), product_id: '', description: '', unit_price: '', quantity: 1, unit_cost: '' })
 
 const emptyForm = () => ({
   client_id: '', channel: 'whatsapp', status: 'encomendado', payment_status: 'pendente',
@@ -21,6 +23,8 @@ export default function Orders() {
   const [clients, setClients] = useState([])
   const [products, setProducts] = useState([])
   const [couriers, setCouriers] = useState([])
+  const [costs, setCosts] = useState({})
+  const { isMaster } = useAuth()
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm())
@@ -34,6 +38,10 @@ export default function Orders() {
       supabase.from('couriers').select('id,name,phone,default_fee,active').order('name'),
     ])
     setCouriers(couriersData ?? [])
+    if (isMaster) {
+      const { data: c } = await supabase.rpc('product_costs')
+      setCosts(Object.fromEntries((c ?? []).map(r => [r.product_id, r.cost == null ? null : Number(r.cost)])))
+    }
     setOrders(ordersData ?? [])
     setClients(clientsData ?? [])
     setProducts(productsData ?? [])
@@ -62,7 +70,7 @@ export default function Orders() {
       delivery_address: order.delivery_address || '',
       delivery_fee: order.delivery_fee ?? '',
       items: order.order_items.length
-        ? order.order_items.map(i => ({ key: i.id, product_id: i.product_id || '', description: i.description, unit_price: i.unit_price, quantity: i.quantity }))
+        ? order.order_items.map(i => ({ key: i.id, product_id: i.product_id || '', description: i.description, unit_price: i.unit_price, quantity: i.quantity, unit_cost: i.unit_cost ?? '' }))
         : [emptyItem()],
     })
     setEditing(order.id)
@@ -78,6 +86,7 @@ export default function Orders() {
       product_id: productId,
       description: product ? product.name : '',
       unit_price: product ? product.price : '',
+      unit_cost: '',
     })
   }
 
@@ -93,6 +102,18 @@ export default function Orders() {
     () => form.items.reduce((sum, i) => sum + (Number(i.unit_price) || 0) * (Number(i.quantity) || 0), 0),
     [form.items]
   )
+
+  // Margem do pedido (só master): custo guardado na venda ou o custo atual da ficha
+  const orderCost = useMemo(() => {
+    let cost = 0, missing = 0
+    for (const i of form.items) {
+      if (!i.description.trim()) continue
+      const c = i.unit_cost !== '' && i.unit_cost != null ? Number(i.unit_cost) : (i.product_id ? costs[i.product_id] : null)
+      if (c == null) { missing++; continue }
+      cost += c * (Number(i.quantity) || 0)
+    }
+    return { cost, missing }
+  }, [form.items, costs])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -131,6 +152,8 @@ export default function Orders() {
         description: i.description,
         unit_price: Number(i.unit_price) || 0,
         quantity: Number(i.quantity) || 1,
+        // custo do dia da venda; vazio = o banco preenche com o custo da ficha
+        unit_cost: i.unit_cost === '' || i.unit_cost == null ? null : Number(i.unit_cost),
       }))
     if (items.length) await supabase.from('order_items').insert(items)
 
@@ -328,6 +351,13 @@ export default function Orders() {
             <button type="button" className="ghost small" onClick={addItem} style={{ marginBottom: 12 }}>+ Adicionar peça</button>
 
             <p style={{ fontWeight: 600 }}>Total: {formatMoney(total)}</p>
+            {isMaster && total > 0 && (
+              <p className="hint" style={{ marginTop: -8 }}>
+                Custo das peças: {formatMoney(orderCost.cost)}
+                {orderCost.cost > 0 && <> · margem <strong className={marginClass(marginPct(total, orderCost.cost))}>{formatPct(marginPct(total, orderCost.cost))}</strong></>}
+                {orderCost.missing > 0 && <> · {orderCost.missing} peça(s) sem ficha de custo (Financeiro → Precificação)</>}
+              </p>
+            )}
 
             <div className="row">
               <div>

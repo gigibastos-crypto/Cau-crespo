@@ -9,6 +9,7 @@ import Catalog from './pages/Catalog.jsx'
 import Orders from './pages/Orders.jsx'
 import VisaoGeral from './pages/financeiro/VisaoGeral.jsx'
 import ContasAPagar from './pages/financeiro/ContasAPagar.jsx'
+import Precificacao from './pages/financeiro/Precificacao.jsx'
 import Fornecedores from './pages/config/Fornecedores.jsx'
 import Categorias from './pages/config/Categorias.jsx'
 import Entregadores from './pages/config/Entregadores.jsx'
@@ -38,6 +39,7 @@ function PrivateArea() {
         <Route path="/estoque/movimentacoes" element={<Movimentacoes />} />
         <Route path="/financeiro" element={master(<VisaoGeral />)} />
         <Route path="/financeiro/contas-a-pagar" element={master(<ContasAPagar />)} />
+        <Route path="/financeiro/precificacao" element={master(<Precificacao />)} />
         <Route path="/configuracoes" element={<Navigate to="/configuracoes/fornecedores" replace />} />
         <Route path="/configuracoes/fornecedores" element={master(<Fornecedores />)} />
         <Route path="/configuracoes/categorias" element={master(<Categorias />)} />

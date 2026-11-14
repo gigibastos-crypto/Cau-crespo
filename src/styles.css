@@ -477,3 +477,24 @@ button.stat-card.stat-button:hover { border-color: var(--brand-accent); opacity:
   table.cards-on-phone td.actions button { flex: 1; padding: 9px 8px; }
   table.cards-on-phone tr:has(td.thumb-cell) td[data-label="Item"] { padding-right: 52px; }
 }
+
+/* ---------- Precificação ---------- */
+.warn-text { color: #93641a; }
+.positive-text { color: var(--positive); }
+.cost-line { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 10px 2px; margin-bottom: 8px; }
+.cost-line select, .cost-line input { margin-bottom: 8px; }
+.cost-line-nums { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; align-items: end; }
+.cost-line-nums label { font-size: 11px; color: var(--muted); margin: 0; }
+.cost-line-nums label input { margin-top: 3px; }
+.cost-line-total { font-variant-numeric: tabular-nums; font-weight: 600; padding-bottom: 18px; white-space: nowrap; }
+.cost-line-nums button { margin-bottom: 10px; }
+.price-summary { background: var(--bg); border-radius: var(--radius); padding: 10px 14px; margin: 4px 0 14px; font-size: 14px; }
+.price-summary > div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; }
+.price-summary span { color: var(--muted); }
+.price-summary strong { font-variant-numeric: tabular-nums; text-align: right; }
+.price-summary .total { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px; }
+.price-summary .big strong { font-size: 20px; color: var(--brand-primary); }
+@media (max-width: 640px) {
+  .cost-line-nums { grid-template-columns: 1fr 1fr; }
+  .cost-line-total { padding-bottom: 0; }
+}

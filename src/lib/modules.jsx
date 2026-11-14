@@ -39,6 +39,7 @@ export const MODULES = [
     pages: [
       { to: '/financeiro', label: 'Visão geral', end: true },
       { to: '/financeiro/contas-a-pagar', label: 'Contas a pagar' },
+      { to: '/financeiro/precificacao', label: 'Precificação' },
     ],
   },
   {
